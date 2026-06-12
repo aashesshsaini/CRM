@@ -49,7 +49,8 @@ async function getAttribute(page, selector, attr) {
 
 async function scrapeSingleQuery(query, maxLeads = 100) {
   const browser = await chromium.launch({
-    headless: HEADLESS,
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const page = await browser.newPage();
