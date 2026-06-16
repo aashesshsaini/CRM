@@ -7,6 +7,7 @@ import Select from '../../components/common/Select.jsx'
 import Input from '../../components/common/Input.jsx'
 import { assignLeads } from '../../services/leadService.js'
 import { getAgents } from '../../services/agentService.js'
+import { parseApiList } from '../../utils/apiHelpers.js'
 import { CATEGORY_OPTIONS } from '../../config/constants.js'
 
 export default function AssignLeadsModal({ isOpen, onClose, onAssigned }) {
@@ -19,24 +20,16 @@ export default function AssignLeadsModal({ isOpen, onClose, onAssigned }) {
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues: { limit: 50 } })
 
-  // useEffect(() => {
-  //   if (isOpen) {
-  //     getAgents()
-  //       .then((data) => setAgents(data?.agents || data || []))
-  //       .catch(() => {})
-  //   }
-  // }, [isOpen])
-
   useEffect(() => {
-  getAgents()
-    .then((d) => {
-      const list = d?.data || [];
-      setAgents(Array.isArray(list) ? list : []);
-    })
-    .catch(console.error);
-}, []);
+    if (!isOpen) return
+    getAgents()
+      .then((d) => setAgents(parseApiList(d)))
+      .catch(console.error)
+  }, [isOpen])
 
-  const agentOptions = agents.map((a) => ({ value: a._id, label: `${a.name} (${a.role})` }))
+  const agentOptions = agents
+    .filter((a) => a.isActive !== false)
+    .map((a) => ({ value: a._id, label: `${a.name} (${a.role})` }))
 
   const onSubmit = async (values) => {
     try {
@@ -46,7 +39,7 @@ export default function AssignLeadsModal({ isOpen, onClose, onAssigned }) {
         city: values.city || undefined,
         category: values.category || undefined,
       })
-      toast.success(`Assigned ${data.assigned ?? 'some'} leads successfully`)
+      toast.success(`Assigned ${data.assignedCount ?? data.assigned ?? 0} leads successfully`)
       reset()
       onAssigned?.()
       onClose()
@@ -86,7 +79,7 @@ export default function AssignLeadsModal({ isOpen, onClose, onAssigned }) {
 
         <Select
           label="Category (optional)"
-          options={CATEGORY_OPTIONS}
+          options={CATEGORY_OPTIONS.map((c) => ({ value: c, label: c }))}
           placeholder="All categories"
           {...register('category')}
         />

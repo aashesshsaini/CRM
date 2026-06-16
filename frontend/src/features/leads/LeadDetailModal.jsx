@@ -57,8 +57,8 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onEdit }) {
         <InfoRow icon={Tag} label="Category" value={lead.category} />
         <InfoRow icon={Globe} label="Website" value={lead.website}
           link={lead.website ? (lead.website.startsWith('http') ? lead.website : `https://${lead.website}`) : null} />
-        <InfoRow icon={MapPin} label="Google Maps" value={lead.googleMapsUrl ? 'View on Maps' : null}
-          link={lead.googleMapsUrl} />
+        <InfoRow icon={MapPin} label="Google Maps" value={lead.mapLink ? 'View on Maps' : null}
+          link={lead.mapLink} />
         <InfoRow icon={User} label="Assigned To" value={lead.assignedTo?.name} />
         <InfoRow icon={FileText} label="Remarks" value={lead.remarks} />
         <InfoRow icon={Calendar} label="Follow-up Date" value={formatDate(lead.followUpDate)} />

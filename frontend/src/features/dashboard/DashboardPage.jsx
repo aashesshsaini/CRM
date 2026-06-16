@@ -33,7 +33,7 @@ export default function DashboardPage() {
 
   const byStatus = stats?.byStatus || {}
   const agentPerformance = stats?.agentPerformance || []
-  const commission = stats?.totalCommission ?? (stats?.totalDealAmount ? stats.totalDealAmount * 0.1 : 0)
+  const commission = stats?.totalCommission ?? 0
 
   return (
     <div className="space-y-6">
@@ -72,7 +72,7 @@ export default function DashboardPage() {
           value={formatCurrency(commission)}
           icon={BadgeDollarSign}
           color="rose"
-          subtitle="estimated 10%"
+          subtitle="20% of deal amount"
         />
       </div>
 

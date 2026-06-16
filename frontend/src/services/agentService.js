@@ -15,3 +15,11 @@ export const createAgent = async (payload) => {
   const { data } = await apiClient.post("/agents", payload);
   return data;
 };
+
+/**
+ * Delete an agent by id
+ */
+export const deleteAgent = async (id) => {
+  const { data } = await apiClient.delete(`/agents/${id}`);
+  return data;
+};

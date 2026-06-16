@@ -2,10 +2,15 @@ const express = require("express");
 const agentRoutes = require("./agent.routes");
 const leadRoutes = require("./lead.routes");
 const scraperRoutes = require("./scraper.routes");
+const authRoutes = require("./auth.routes");
 
 const router = express.Router();
 
 const defaultRoute = [
+  {
+    path: "/auth",
+    route: authRoutes,
+  },
   {
     path: "/agents",
     route: agentRoutes,

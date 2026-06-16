@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react'
-import { UserPlus, Download, Phone, Shield, RefreshCw } from 'lucide-react'
+import { UserPlus, Download, Phone, Shield, RefreshCw, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { getAgents } from '../../services/agentService.js'
+import { parseApiList } from '../../utils/apiHelpers.js'
 import { exportLeadsExcel } from '../../services/leadService.js'
 import { downloadBlob } from '../../utils/formatters.js'
 import { useModal } from '../../hooks/useModal.js'
+import { useAuth } from '../../app/AuthContext.jsx'
 import Button from '../../components/common/Button.jsx'
 import Loader from '../../components/common/Loader.jsx'
 import EmptyState from '../../components/common/EmptyState.jsx'
 import CreateAgentModal from './CreateAgentModal.jsx'
+import DeleteAgentModal from './DeleteAgentModal.jsx'
 
 const roleColor = {
   CALLER: 'bg-blue-50 text-blue-700',
@@ -17,18 +20,18 @@ const roleColor = {
 }
 
 export default function AgentsPage() {
+  const { agent: currentAgent } = useAuth()
   const [agents, setAgents] = useState([])
   const [loading, setLoading] = useState(true)
   const [exportingId, setExportingId] = useState(null)
+  const [agentToDelete, setAgentToDelete] = useState(null)
   const modal = useModal()
 
   const fetchAgents = async () => {
     setLoading(true)
     try {
       const data = await getAgents()
-      // setAgents(data?.agents || data || [])
-      const list = data?.data || data?.agents || [];
-setAgents(Array.isArray(list) ? list : []);
+      setAgents(parseApiList(data))
     } catch (err) {
       toast.error(err.message || 'Failed to load agents')
     } finally {
@@ -105,17 +108,28 @@ setAgents(Array.isArray(list) ? list : []);
                 </div>
               </div>
 
-              {/* Export button */}
-              <Button
-                variant="secondary"
-                size="xs"
-                icon={Download}
-                loading={exportingId === agent._id}
-                onClick={() => handleExport(agent._id, agent.name)}
-                className="mt-auto self-start"
-              >
-                Export Leads
-              </Button>
+              <div className="mt-auto flex flex-wrap items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="xs"
+                  icon={Download}
+                  loading={exportingId === agent._id}
+                  onClick={() => handleExport(agent._id, agent.name)}
+                >
+                  Export Leads
+                </Button>
+                {currentAgent?._id !== agent._id && (
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    icon={Trash2}
+                    onClick={() => setAgentToDelete(agent)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -125,6 +139,13 @@ setAgents(Array.isArray(list) ? list : []);
         isOpen={modal.isOpen}
         onClose={modal.close}
         onCreated={fetchAgents}
+      />
+
+      <DeleteAgentModal
+        isOpen={Boolean(agentToDelete)}
+        onClose={() => setAgentToDelete(null)}
+        agent={agentToDelete}
+        onDeleted={fetchAgents}
       />
     </div>
   )

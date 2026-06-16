@@ -52,12 +52,37 @@ export default function CreateAgentModal({ isOpen, onClose, onCreated }) {
           error={errors.name?.message}
         />
         <Input
+          label="Email"
+          type="email"
+          placeholder="agent@company.com"
+          required
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: 'Invalid email',
+            },
+          })}
+          error={errors.email?.message}
+        />
+        <Input
           label="Phone Number"
           placeholder="10-digit mobile number"
           maxLength={10}
           required
           {...register('phone', validators.phone)}
           error={errors.phone?.message}
+        />
+        <Input
+          label="Password"
+          type="password"
+          placeholder="Minimum 8 characters"
+          required
+          {...register('password', {
+            required: 'Password is required',
+            minLength: { value: 8, message: 'Minimum 8 characters' },
+          })}
+          error={errors.password?.message}
         />
         <Select
           label="Role"

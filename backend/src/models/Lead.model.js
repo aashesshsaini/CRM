@@ -69,4 +69,7 @@ const leadSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+leadSchema.index({ status: 1, assignedTo: 1, createdAt: 1 });
+leadSchema.index({ city: 1, category: 1, status: 1 });
+
 module.exports = mongoose.model("Lead", leadSchema);

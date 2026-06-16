@@ -71,9 +71,9 @@ export default function LeadsTable({ leads = [], onViewLead, onUpdateStatus, loa
                           <Globe className="w-3 h-3" /> Web
                         </a>
                       )}
-                      {lead.googleMapsUrl && (
+                      {lead.mapLink && (
                         <a
-                          href={lead.googleMapsUrl}
+                          href={lead.mapLink}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-[11px] text-orange-500 hover:text-orange-600 font-medium"
