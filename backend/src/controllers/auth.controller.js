@@ -71,3 +71,61 @@ exports.me = async (req, res) => {
     data: req.agent,
   });
 };
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password and new password are required",
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 8 characters",
+      });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from current password",
+      });
+    }
+
+    const agent = await Agent.findById(req.agent._id);
+
+    if (!agent?.password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password change is not available for this account",
+      });
+    }
+
+    const matchPassword = await bcrypt.compare(currentPassword, agent.password);
+
+    if (!matchPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    agent.password = await bcrypt.hash(newPassword, 10);
+    await agent.save();
+
+    return res.json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

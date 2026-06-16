@@ -32,3 +32,16 @@ export const fetchCurrentAgent = async () => {
   setAuthSession(getToken(), agent)
   return agent
 }
+
+export const changePassword = async (currentPassword, newPassword) => {
+  const { data } = await apiClient.post('/auth/change-password', {
+    currentPassword,
+    newPassword,
+  })
+
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to change password')
+  }
+
+  return data
+}

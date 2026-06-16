@@ -1,9 +1,13 @@
-import { Menu, Bell, LogOut } from 'lucide-react'
+import { useState } from 'react'
+import { Menu, Bell, LogOut, KeyRound } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAuth } from '../../app/AuthContext.jsx'
+import ChangePasswordModal from '../../features/auth/ChangePasswordModal.jsx'
+import { AGENT_ROLES } from '../../config/constants.js'
 
 export default function Header({ onMenuClick, title }) {
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false)
   const navigate = useNavigate()
   const { agent, logout } = useAuth()
 
@@ -37,6 +41,16 @@ export default function Header({ onMenuClick, title }) {
         <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">
           {initial}
         </div>
+        {agent?.role === AGENT_ROLES.ADMIN && (
+          <button
+            onClick={() => setChangePasswordOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            title="Change password"
+          >
+            <KeyRound className="w-4 h-4" />
+            <span className="hidden md:inline text-sm">Password</span>
+          </button>
+        )}
         <button
           onClick={handleLogout}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors ml-1"
@@ -46,6 +60,11 @@ export default function Header({ onMenuClick, title }) {
           <span className="hidden md:inline text-sm">Logout</span>
         </button>
       </div>
+
+      <ChangePasswordModal
+        isOpen={changePasswordOpen}
+        onClose={() => setChangePasswordOpen(false)}
+      />
     </header>
   )
 }
